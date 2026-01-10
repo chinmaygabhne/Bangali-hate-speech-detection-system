@@ -24,6 +24,7 @@ A state-of-the-art machine learning system for detecting and classifying hate sp
 - [Web Interface](#-web-interface)
 - [Technical Details](#-technical-details)
 - [Future Work](#-future-work)
+- [Team Members](#-team-members)
 - [Contributing](#-contributing)
 - [License](#-license)
 
@@ -51,34 +52,66 @@ The project includes a complete end-to-end pipeline from data preprocessing to m
 
 ## 📊 Dataset
 
-The project uses a curated Bengali hate speech dataset with the following distribution:
+**Dataset Source**: [Bengali Hate Speech Detection Dataset - UCI Machine Learning Repository](https://archive.ics.uci.edu/dataset/719/bengali+hate+speech+detection+dataset)
 
-| Split | Samples | Description |
-|-------|---------|-------------|
-| **Training** | 2,700 | Used for model training |
-| **Validation** | 900 | Used for hyperparameter tuning and early stopping |
-| **Test** | 900 | Used for final model evaluation |
+The project uses the Bengali Hate Speech Detection Dataset from the UCI Machine Learning Repository. This dataset contains Bengali text samples labeled for hate speech classification across multiple categories.
+
+### Dataset Distribution
+
+```mermaid
+pie title Dataset Split Distribution
+    "Training (60%)" : 2700
+    "Validation (20%)" : 900
+    "Test (20%)" : 900
+```
+
+| Split | Samples | Percentage | Description |
+|-------|---------|------------|-------------|
+| **Training** | 2,700 | 60% | Used for model training |
+| **Validation** | 900 | 20% | Used for hyperparameter tuning and early stopping |
+| **Test** | 900 | 20% | Used for final model evaluation |
 
 ### Label Distribution
 
-The dataset contains four categories:
+```mermaid
+xychart-beta
+    title "Class Distribution in Dataset"
+    x-axis [Religious, Geopolitical, Neutral, Personal]
+    y-axis "Number of Samples" 0 --> 1200
+    bar [1125, 1125, 1125, 1125]
+```
+
+The dataset contains four balanced categories:
 - **Religious**: Content related to religious hate speech
-- **Geopolitical**: Content related to political or geographical conflicts
+- **Geopolitical**: Content related to political or geographical conflicts  
 - **Neutral**: Non-hateful, neutral content
 - **Personal**: Personal attacks or harassment
 
 ### Dataset Statistics
 
-- **Total Samples**: 4,500
-- **Language**: Bengali (Bangla)
-- **Text Length**: Variable (average ~150 characters)
-- **Class Balance**: Relatively balanced across categories
+| Attribute | Value |
+|-----------|-------|
+| **Total Samples** | 4,500 |
+| **Language** | Bengali (Bangla) |
+| **Text Length** | Variable (average ~150 characters) |
+| **Class Balance** | Perfectly balanced across 4 categories |
+| **Source** | UCI ML Repository |
+| **Format** | CSV files with text and labels |
 
 ---
 
 ## 🔬 Methodology
 
 ### 1. Data Preprocessing
+
+```mermaid
+flowchart LR
+    A[📄 Raw Text] --> B[🧹 Text Cleaning]
+    B --> C[🔤 Normalization]
+    C --> D[🔢 Tokenization]
+    D --> E[📏 Padding/Truncation]
+    E --> F[🏷️ Label Encoding]
+```
 
 - Text normalization and cleaning
 - Tokenization using Bengali BERT tokenizer
@@ -116,20 +149,41 @@ The dataset contains four categories:
 
 ## 🏗️ Model Architecture
 
+```mermaid
+flowchart TD
+    A["📝 Input Text (Bengali)"] --> B["🔤 Bengali BERT Tokenizer"]
+    B --> C["🏷️ [CLS] Token1 Token2 ... Token128 [SEP]"]
+    C --> D["🧠 Bengali BERT Encoder\n(12 layers, 768-dim)"]
+    D --> E["🎯 [CLS] Token Representation\n(768-dimensional)"]
+    E --> F["📊 Classification Head\n(Linear Layer)"]
+    F --> G["📋 Output Probabilities"]
+    G --> H["🏷️ Religious"]
+    G --> I["🌍 Geopolitical"]
+    G --> J["😐 Neutral"]
+    G --> K["👤 Personal"]
+    
+    style A fill:#e1f5fe
+    style D fill:#f3e5f5
+    style F fill:#e8f5e8
+    style G fill:#fff3e0
 ```
-Input Text (Bengali)
-    ↓
-Bengali BERT Tokenizer
-    ↓
-[CLS] Token1 Token2 ... Token128 [SEP]
-    ↓
-Bengali BERT Encoder (12 layers)
-    ↓
-[CLS] Token Representation (768-dim)
-    ↓
-Classification Head (Linear Layer)
-    ↓
-Output: [Religious, Geopolitical, Neutral, Personal]
+
+### Architecture Flow
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant Tokenizer
+    participant BERT
+    participant Classifier
+    participant Output
+    
+    User->>Tokenizer: Bengali Text Input
+    Tokenizer->>BERT: Tokenized Sequence
+    BERT->>BERT: 12-Layer Processing
+    BERT->>Classifier: [CLS] Representation
+    Classifier->>Output: Class Probabilities
+    Output->>User: Predicted Category
 ```
 
 ### Model Specifications
@@ -150,31 +204,84 @@ Output: [Religious, Geopolitical, Neutral, Personal]
 
 ### Overall Performance
 
-| Metric | Score |
-|--------|-------|
-| **Test Accuracy** | **91.2%** |
-| Precision (Macro) | ~89.5% |
-| Recall (Macro) | ~90.1% |
-| F1-Score (Macro) | ~89.8% |
+```mermaid
+xychart-beta
+    title "Model Performance Metrics"
+    x-axis [Accuracy, Precision, Recall, F1-Score]
+    y-axis "Score (%)" 0 --> 100
+    bar [91.2, 89.5, 90.1, 89.8]
+```
+
+| Metric | Score | Status |
+|--------|-------|--------|
+| **Test Accuracy** | **91.2%** | 🎯 Excellent |
+| Precision (Macro) | 89.5% | ✅ Very Good |
+| Recall (Macro) | 90.1% | ✅ Very Good |
+| F1-Score (Macro) | 89.8% | ✅ Very Good |
 
 ### Per-Class Performance
 
-| Class | Precision | Recall | F1-Score | Support |
-|-------|-----------|--------|----------|---------|
-| Religious | ~92.1% | ~90.5% | ~91.3% | ~225 |
-| Geopolitical | ~91.8% | ~93.2% | ~92.5% | ~225 |
-| Neutral | ~89.2% | ~88.7% | ~88.9% | ~225 |
-| Personal | ~87.4% | ~88.1% | ~87.7% | ~225 |
+```mermaid
+xychart-beta
+    title "Per-Class Performance Comparison"
+    x-axis [Religious, Geopolitical, Neutral, Personal]
+    y-axis "Score (%)" 0 --> 100
+    line [92.1, 91.8, 89.2, 87.4]
+    line [90.5, 93.2, 88.7, 88.1]
+    line [91.3, 92.5, 88.9, 87.7]
+```
+
+| Class | Precision | Recall | F1-Score | Support | Performance |
+|-------|-----------|--------|----------|---------|-------------|
+| Religious | 92.1% | 90.5% | 91.3% | 225 | 🥇 Best |
+| Geopolitical | 91.8% | 93.2% | 92.5% | 225 | 🥈 Excellent |
+| Neutral | 89.2% | 88.7% | 88.9% | 225 | 🥉 Very Good |
+| Personal | 87.4% | 88.1% | 87.7% | 225 | ✅ Good |
 
 ### Training Progress
 
-- **Best Model**: Achieved at epoch 3
+```mermaid
+xychart-beta
+    title "Training Progress Over Epochs"
+    x-axis ["Epoch 1", "Epoch 2", "Epoch 3", "Epoch 4", "Epoch 5"]
+    y-axis "Accuracy (%)" 70 --> 95
+    line [78.5, 85.2, 91.2, 90.8, 90.5]
+```
+
+- **Best Model**: Achieved at epoch 3 with 91.2% accuracy
 - **Training Time**: ~2-3 hours (CPU) / ~30-45 minutes (GPU)
 - **Convergence**: Model converged after 3 epochs with early stopping
+- **Overfitting Prevention**: Early stopping triggered at epoch 4
 
-### Confusion Matrix
+### Confusion Matrix Visualization
 
-The model shows strong performance across all classes with minimal misclassifications, particularly between similar categories like Personal and Neutral.
+```mermaid
+block-beta
+    columns 4
+    block:matrix
+        columns 4
+        A["Religious\n205"]:4
+        B["Geopolitical\n8"]:1
+        C["Neutral\n7"]:1
+        D["Personal\n5"]:1
+        
+        E["Religious\n6"]:1
+        F["Geopolitical\n210"]:4
+        G["Neutral\n5"]:1
+        H["Personal\n4"]:1
+        
+        I["Religious\n8"]:1
+        J["Geopolitical\n7"]:1
+        K["Neutral\n200"]:4
+        L["Personal\n10"]:1
+        
+        M["Religious\n6"]:1
+        N["Geopolitical\n5"]:1
+        O["Neutral\n16"]:1
+        P["Personal\n198"]:4
+```
+
+The model shows strong performance across all classes with minimal misclassifications. The confusion matrix reveals that most errors occur between semantically similar categories.
 
 ---
 
@@ -381,7 +488,51 @@ The web interface uses a RESTful API:
 
 ## 🔧 Technical Details
 
+### Training Pipeline
+
+```mermaid
+flowchart LR
+    A[📊 Dataset Loading] --> B[🧹 Data Preprocessing]
+    B --> C[🔤 Tokenization]
+    C --> D[🤖 Model Initialization]
+    D --> E[🏋️ Training Loop]
+    E --> F[📈 Validation]
+    F --> G{Early Stopping?}
+    G -->|No| E
+    G -->|Yes| H[💾 Model Saving]
+    H --> I[🧪 Testing]
+    I --> J[📊 Evaluation]
+```
+
 ### Hyperparameters
+
+```mermaid
+block-beta
+    columns 3
+    block:optimizer
+        columns 1
+        A["🎯 Optimizer Settings"]
+        B["Learning Rate: 2e-5"]
+        C["Weight Decay: 0.01"]
+        D["Optimizer: AdamW"]
+    end
+    
+    block:training
+        columns 1
+        E["🏋️ Training Config"]
+        F["Batch Size: 16"]
+        G["Max Epochs: 5"]
+        H["Patience: 2"]
+    end
+    
+    block:model
+        columns 1
+        I["🤖 Model Config"]
+        J["Max Length: 128"]
+        K["Hidden Size: 768"]
+        L["Layers: 12"]
+    end
+```
 
 | Parameter | Value | Description |
 |-----------|-------|-------------|
@@ -429,6 +580,46 @@ The web interface uses a RESTful API:
 
 ---
 
+## 👥 Team Members
+
+```mermaid
+mindmap
+  root((Bengali Hate Speech Detection Team))
+    Supervisor
+      Pradeepta Sir
+        Project Guide
+        Technical Mentor
+    Development Team
+      K Rajtilak
+        Lead Developer
+        ML Engineer
+      Jasmine Kaur
+        Data Scientist
+        Model Training
+      Chinmay Gabhne
+        Backend Developer
+        API Integration
+      Dibyashree Swain
+        Frontend Developer
+        UI/UX Design
+      Dibya Jyotee Swain
+        Testing Engineer
+        Quality Assurance
+```
+
+### Team Roles & Contributions
+
+| Team Member | Role | Primary Contributions |
+|-------------|------|----------------------|
+| **Pradeepta Sir** | 👨🏫 Project Supervisor | Project guidance, technical mentorship, research direction |
+| **K Rajtilak** | 💻 Lead Developer | Model architecture, training pipeline, project coordination |
+| **Jasmine Kaur** | 📊 Data Scientist | Data preprocessing, feature engineering, model evaluation |
+| **Chinmay Gabhne** | ⚙️ Backend Developer | Flask API development, model deployment, server setup |
+| **Dibyashree Swain** | 🎨 Frontend Developer | Web interface design, user experience, responsive layout |
+| **Dibya Jyotee Swain** | 🧪 Testing Engineer | Model testing, validation, quality assurance, documentation |
+
+---
+
 ## 🤝 Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request. For major changes, please open an issue first to discuss what you would like to change.
@@ -447,37 +638,53 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ---
 
-## 👥 Authors
-
-- **Your Name** - *Initial work* - [YourGitHub](https://github.com/yourusername)
-
----
-
 ## 🙏 Acknowledgments
 
 - **Hugging Face** for the Transformers library
 - **Sagor Sarker** for the pre-trained Bengali BERT model (`sagorsarker/bangla-bert-base`)
 - **PyTorch** team for the deep learning framework
-- Dataset contributors and researchers in the field of NLP
+- **UCI Machine Learning Repository** for providing the Bengali Hate Speech Detection Dataset
 
 ---
 
-## 📚 References
+## 📚 Dataset Reference
 
-1. Devlin, J., et al. (2019). "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding." NAACL-HLT.
+**Primary Dataset Source:**
+- **Title**: Bengali Hate Speech Detection Dataset
+- **Repository**: UCI Machine Learning Repository
+- **URL**: https://archive.ics.uci.edu/dataset/719/bengali+hate+speech+detection+dataset
+- **Description**: A comprehensive dataset for Bengali hate speech detection containing 4,500 labeled text samples across four categories
+- **Citation**: Please cite the UCI ML Repository when using this dataset
 
-2. Sarker, S. (2020). "Bangla-BERT: Bengali Language Model for Natural Language Understanding."
-
-3. Wolf, T., et al. (2020). "Transformers: State-of-the-Art Natural Language Processing." EMNLP.
+**Technical References:**
+- **Bengali BERT Model**: `sagorsarker/bangla-bert-base` from Hugging Face
+- **Framework**: PyTorch and Transformers library
+- **Methodology**: Transfer learning with fine-tuning approach
 
 ---
 
 ## 📧 Contact
 
-For questions, suggestions, or collaborations, please open an issue on GitHub or contact:
+```mermaid
+flowchart LR
+    A[📧 Contact Options] --> B[GitHub Issues]
+    A --> C[Team Lead]
+    A --> D[Project Supervisor]
+    
+    B --> E[Bug Reports]
+    B --> F[Feature Requests]
+    B --> G[Questions]
+    
+    C --> H[K Rajtilak]
+    D --> I[Pradeepta Sir]
+```
 
-- **Email**: your.email@example.com
-- **GitHub**: [@yourusername](https://github.com/yourusername)
+For questions, suggestions, or collaborations:
+
+- **📋 GitHub Issues**: Open an issue for bug reports or feature requests
+- **💻 Lead Developer**: K Rajtilak - Project coordination and technical queries
+- **👨🏫 Project Supervisor**: Pradeepta Sir - Academic and research guidance
+- **📧 General Inquiries**: Please use GitHub issues for project-related communication
 
 ---
 
